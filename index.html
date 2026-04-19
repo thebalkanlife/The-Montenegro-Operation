@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Balkan Country Finder</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 24px 16px; }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; color: #3A3834; }
+  .subtitle { font-size: 14px; color: #888; margin-bottom: 20px; }
+  .filter-group { margin-bottom: 12px; }
+  .filter-label { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .filter-btn {
+    font-size: 13px;
+    font-family: inherit;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { background: #f5f5f5; }
+  .filter-btn.active {
+    background: #5AADAC;
+    color: #fff;
+    border-color: #5AADAC;
+  }
+  .count { font-size: 13px; color: #888; margin-bottom: 16px; margin-top: 8px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .card-name { font-size: 15px; font-weight: 600; color: #3A3834; }
+  .card-flag { font-size: 20px; }
+  .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-coast { background: #e0f4f4; color: #2a8a8a; }
+  .badge-mountain { background: #e8f4e8; color: #2a6a2a; }
+  .badge-city { background: #f0eeff; color: #5a4aaa; }
+  .badge-all { background: #fff3e0; color: #b86a00; }
+  .card-best { font-size: 13px; color: #444; line-height: 1.5; }
+  .card-best strong { color: #1a1a1a; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #f5f5f5;
+    color: #666;
+  }
+  .card-note { font-size: 12px; color: #999; line-height: 1.5; font-style: italic; }
+  .divider { height: 1px; background: #f0f0f0; margin: 12px 0 16px; }
+</style>
+</head>
+<body>
+
+<h2>Find your country</h2>
+<p class="subtitle">Filter by what matters to you to find the right Balkan destination.</p>
+
+<div class="filter-group">
+  <div class="filter-label">Lifestyle</div>
+  <div class="filters" id="lifestyle-filters">
+    <button class="filter-btn" data-filter="coast">I love the coast</button>
+    <button class="filter-btn" data-filter="mountain">I love mountains</button>
+    <button class="filter-btn" data-filter="city">I want city life</button>
+    <button class="filter-btn" data-filter="all-three">I want all three</button>
+  </div>
+</div>
+
+<div class="filter-group">
+  <div class="filter-label">Finances & Tax</div>
+  <div class="filters" id="tax-filters">
+    <button class="filter-btn" data-filter="lowest-tax">Lowest tax possible</button>
+    <button class="filter-btn" data-filter="eu-member">EU member</button>
+    <button class="filter-btn" data-filter="budget">Ultra budget</button>
+    <button class="filter-btn" data-filter="property">Good for property investment</button>
+  </div>
+</div>
+
+<div class="filter-group">
+  <div class="filter-label">Practicalities</div>
+  <div class="filters" id="practical-filters">
+    <button class="filter-btn" data-filter="english-friendly">English friendly</button>
+    <button class="filter-btn" data-filter="easy-visa">Easy visa / residency</button>
+    <button class="filter-btn" data-filter="nightlife">Strong nightlife</button>
+    <button class="filter-btn" data-filter="expat-community">Expat community</button>
+    <button class="filter-btn" data-filter="digital-nomad-visa">Digital nomad visa</button>
+    <button class="filter-btn" data-filter="eu-candidate">EU candidate</button>
+  </div>
+</div>
+
+<div class="divider"></div>
+<div class="count" id="count">Showing all 6 countries</div>
+
+<div class="cards" id="cards"></div>
+
+<script>
+const countries = [
+  {
+    name: "Serbia",
+    flag: "🇷🇸",
+    badge: "city",
+    badgeLabel: "City & mountains",
+    bestFor: "People who want vibrant city life, the lowest taxes in the region, and a deep cultural experience.",
+    note: "Belgrade is one of Europe's most underrated cities — intense nightlife, incredible food, and a warmth that's hard to find elsewhere. Flat 15% tax on everything.",
+    tags: ["city", "mountain", "lowest-tax", "budget", "nightlife", "property", "english-friendly", "easy-visa"]
+  },
+  {
+    name: "Croatia",
+    flag: "🇭🇷",
+    badge: "coast",
+    badgeLabel: "Coast & city",
+    bestFor: "People who want EU membership, a stunning Adriatic coastline, and a proper European capital in Zagreb.",
+    note: "The most expensive in this guide but still 40% cheaper than Western Europe. EU membership makes visas and residency more straightforward.",
+    tags: ["coast", "city", "eu-member", "english-friendly", "expat-community", "easy-visa", "property"]
+  },
+  {
+    name: "Montenegro",
+    flag: "🇲🇪",
+    badge: "all-three",
+    badgeLabel: "Coast, city & mountains",
+    bestFor: "People who want it all — dramatic coastline, mountains, and Europe's lowest corporate tax at 9%.",
+    note: "Porto Montenegro is the Monaco of the Balkans. Bay of Kotor might be the most beautiful place in Europe. EU candidate country — strong long-term positioning.",
+    tags: ["coast", "city", "mountain", "all-three", "lowest-tax", "budget", "property", "eu-candidate", "english-friendly", "easy-visa"]
+  },
+  {
+    name: "Greece",
+    flag: "🇬🇷",
+    badge: "coast",
+    badgeLabel: "Coast & islands",
+    bestFor: "People drawn to the Mediterranean dream — islands, history, food, and a proper digital nomad visa.",
+    note: "Athens is a world-class city with incredible history and nightlife. The islands offer a variety of lifestyle impossible to match anywhere else.",
+    tags: ["coast", "city", "digital-nomad-visa", "english-friendly", "expat-community", "eu-member", "nightlife", "property"]
+  },
+  {
+    name: "Albania",
+    flag: "🇦🇱",
+    badge: "coast",
+    badgeLabel: "Coast & mountains",
+    bestFor: "Early movers who want the most affordable country in the region with incredible upside potential.",
+    note: "The dark horse. Tirana is growing fast, Sarandë on the coast is stunning, and Albania is currently the cheapest country in the Balkans. Infrastructure developing rapidly.",
+    tags: ["coast", "mountain", "budget", "lowest-tax", "property", "easy-visa", "eu-candidate"]
+  },
+  {
+    name: "Bosnia & Herzegovina",
+    flag: "🇧🇦",
+    badge: "mountain",
+    badgeLabel: "Mountains & culture",
+    bestFor: "People looking for raw authenticity, ultra-low costs, and one of the most underrated cultures in Europe.",
+    note: "Mostar is jaw-droppingly beautiful. Sarajevo has a unique layered culture unlike anywhere else. Cheapest cost of living in the region by a significant margin.",
+    tags: ["mountain", "city", "budget", "lowest-tax", "easy-visa", "eu-candidate"]
+  }
+];
+
+const badgeClasses = {
+  coast: "badge-coast",
+  mountain: "badge-mountain",
+  city: "badge-city",
+  "all-three": "badge-all"
+};
+
+let activeFilters = new Set();
+
+function renderCards(filtered) {
+  const container = document.getElementById("cards");
+  const count = document.getElementById("count");
+  count.textContent = filtered.length === countries.length
+    ? `Showing all ${countries.length} countries`
+    : `Showing ${filtered.length} of ${countries.length} countries`;
+
+  container.innerHTML = filtered.map(c => `
+    <div class="card">
+      <div class="card-top">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="card-flag">${c.flag}</span>
+          <span class="card-name">${c.name}</span>
+        </div>
+        <span class="badge ${badgeClasses[c.badge]}">${c.badgeLabel}</span>
+      </div>
+      <div class="card-best"><strong>Best for:</strong> ${c.bestFor}</div>
+      <div class="card-tags">${c.tags.map(t => `<span class="tag">${t.replace(/-/g,' ')}</span>`).join('')}</div>
+      <div class="card-note">${c.note}</div>
+    </div>
+  `).join('');
+}
+
+function applyFilters() {
+  if (activeFilters.size === 0) {
+    renderCards(countries);
+    return;
+  }
+  const filtered = countries.filter(c =>
+    [...activeFilters].every(f => c.tags.includes(f))
+  );
+  renderCards(filtered);
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.filter;
+    if (activeFilters.has(filter)) {
+      activeFilters.delete(filter);
+      btn.classList.remove('active');
+    } else {
+      activeFilters.add(filter);
+      btn.classList.add('active');
+    }
+    applyFilters();
+  });
+});
+
+renderCards(countries);
+</script>
+</body>
+</html>
